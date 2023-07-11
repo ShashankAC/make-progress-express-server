@@ -26,7 +26,7 @@ const server = new ApolloServer({
       return {
         async willSendResponse(requestContext) {
           const { request, response } = requestContext;
-          const token = jwt.sign({ data: 'Death is coming.' }, SECRET_KEY, { expiresIn: '1h' });
+          const token = jwt.sign({ data: response.body.singleResult.data.login.userId }, SECRET_KEY, { expiresIn: '1h' });
           response.http.headers.set('Authorization', `Bearer ${token}`);
           response.http.headers.set('Access-Control-Expose-Headers', 'Authorization');
         }
@@ -47,7 +47,14 @@ startServer().then(() => {
     // expressMiddleware accepts the same arguments:
     // an Apollo Server instance and optional configuration options
     expressMiddleware(server, {
-      context: async ({ req }) => ({ token: req.headers.token, models: models }),
+      context: async ({ req }) => {
+        const token = req.headers.authorization;
+        let decoded = null;
+        if(token) {
+          decoded = jwt.verify(token, SECRET_KEY, { expiresIn: '1h' });
+        }
+        return { userData: decoded, models: models };
+      },
       listen: { port: 4000 },
     }),
   );

@@ -48,13 +48,22 @@ const resolvers = {
     },
     Mutation: {
       async createUser(root, { name, email, password }, { models }) {
-        return models.User.create({
-        name,
-        email,
-        password: await hash(password, 10),
+        const user = await models.User.findOne({
+          where: {
+            email: email 
+          }
         });
+        if (user) {
+          throw new Error ('Email already exists');
+        } else {
+          return models.User.create({
+            name,
+            email,
+            password: await hash(password, 10),
+          });
+        }
       },
-      async updateUser(root, {userId, name, password}, { models }) {
+      async updateUser(root, {userId, name, password}, { userData, models }) {
 
         try {
           const user = await models.User.findByPk(userId);
