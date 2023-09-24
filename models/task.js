@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Activity extends Model {
+  class Task extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,11 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Activity.belongsTo(models.subGoal, { foreignKey: 'subGoalId' });
+      Task.belongsTo(models.subGoal, { foreignKey: 'subGoalId' });
     }
   }
-  Activity.init({
-    activityId: {
+  Task.init({
+    subGoalId: {
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
+    taskId: {
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
@@ -28,10 +32,14 @@ module.exports = (sequelize, DataTypes) => {
     timeSpent: {
       allowNull: false,
       type: DataTypes.DOUBLE
+    },
+    status: {
+      allowNull: false,
+      type: DataTypes.STRING
     }
   }, {
     sequelize,
-    modelName: 'Activity',
+    modelName: 'Task',
   });
-  return Activity;
+  return Task;
 };

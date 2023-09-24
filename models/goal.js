@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Goal.init({
+    userId: {
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
     goalId: {
       allowNull: false,
       primaryKey: true,
@@ -39,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     startDate: {
+      allowNull: false,
+      type: DataTypes.DATE
+    },
+    endDate: {
       allowNull: false,
       type: DataTypes.DATE
     },

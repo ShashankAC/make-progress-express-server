@@ -3,7 +3,11 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Goals', {
-      id: {
+      userId: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
+      goalId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -26,6 +30,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       startDate: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      endDate: {
         allowNull: false,
         type: Sequelize.DATE
       },

@@ -20,15 +20,18 @@ const httpServer = createServer(app);
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  introspection: true,
   // context: () => { models, res },
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer }), {
     async requestDidStart() {
       return {
         async willSendResponse(requestContext) {
           const { request, response } = requestContext;
-          const token = jwt.sign({ data: response.body.singleResult.data.login.userId }, SECRET_KEY, { expiresIn: '1h' });
-          response.http.headers.set('Authorization', `Bearer ${token}`);
-          response.http.headers.set('Access-Control-Expose-Headers', 'Authorization');
+          if (request.operationName !== 'CreateUser') {                  
+            const token = jwt.sign({ data: response.body.singleResult.data.login.userId }, SECRET_KEY, { expiresIn: '1h' });
+            response.http.headers.set('Authorization', `Bearer ${token}`);
+            response.http.headers.set('Access-Control-Expose-Headers', 'Authorization');
+          }
         }
       }
     }

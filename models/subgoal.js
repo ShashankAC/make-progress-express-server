@@ -12,10 +12,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       subGoal.belongsTo(models.Goal, { foreignKey: 'goalId' } );
-      subGoal.hasMany(models.Activity, { foreignKey: 'subGoalId' });
+      subGoal.hasMany(models.Task, { foreignKey: 'subGoalId' });
     }
   }
   subGoal.init({
+    goalId: {
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
     subGoalId: {
       allowNull: false,
       primaryKey: true,
@@ -36,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     startDate: {
       allowNull: false,
+      type: DataTypes.DATE
+    },
+    endDate: {
+      allowNull: true,
       type: DataTypes.DATE
     },
     progress: {

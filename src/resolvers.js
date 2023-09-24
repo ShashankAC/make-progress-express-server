@@ -4,7 +4,11 @@ const { Op } = require('sequelize');
 const resolvers = {
     Query: {
       async user(root, { userId }, { models }) {
-        return models.User.findById(userId);
+        return models.User.findOne({
+          where: {
+            userId: userId
+          }
+        })
       },
       async login(root, { usernameOrEmail, password }, { models }) {
         const user = await models.User.findOne({
@@ -37,13 +41,13 @@ const resolvers = {
         return models.subGoal.findAll({ where: { goalId: goalId } });
       },
       async getSubGoal(root, args, { models }) {
-        return models.subGoal.findById(args.id);
+        return models.subGoal.findById(args.subGoalId);
       },
-      async allActivities(root, { subGoalId }, { models }) {
-        return models.Activity.findAll({ where: { subGoalId: subGoalId } });
+      async allTasks(root, { subGoalId }, { models }) {
+        return models.Task.findAll({ where: { subGoalId: subGoalId } });
       },
-      async getActivity(root, args, { models }) {
-        return models.Activity.findById(args.id);
+      async getTask(root, args, { models }) {
+        return models.Task.findById(args.taskId);
       },
     },
     Mutation: {
@@ -56,15 +60,14 @@ const resolvers = {
         if (user) {
           throw new Error ('Email already exists');
         } else {
-          return models.User.create({
-            name,
-            email,
-            password: await hash(password, 10),
-          });
-        }
+        return models.User.create({
+          name,
+          email,
+          password: await bcryptjs.hash(password, 10),
+        });
+      };
       },
       async updateUser(root, {userId, name, password}, { userData, models }) {
-
         try {
           const user = await models.User.findByPk(userId);
 
@@ -89,14 +92,14 @@ const resolvers = {
       },
       async createGoal(
         root,
-        { userId, title, description, category, priority, startDate, progress, status },
+        { userId, title, description, category, priority, startDate, endDate, progress, status },
         { models }
       ) {
-        return models.Goal.create({ userId, title, description, category, priority, startDate, progress, status });
+        return models.Goal.create({ userId, title, description, category, priority, startDate, endDate, progress, status });
       },
       async updateGoal(
         root,
-        { goalId, title, description, category, priority, startDate, progress, status },
+        { goalId, title, description, category, priority, startDate, endDate, progress, status },
         { models }
       ) {
          try {
@@ -119,6 +122,9 @@ const resolvers = {
           }
           if (startDate) {
             updatedFields.startDate = startDate;
+          }
+          if (endDate) {
+            updatedFields.endDate = endDate;
           }
           if (progress) {
             updatedFields.progress = progress;
@@ -167,6 +173,9 @@ const resolvers = {
             if (startDate) {
               updatedFields.startDate = startDate;
             }
+            if (endDate) {
+              updatedFields.endDate = endDate;
+            }
             if (progress) {
               updatedFields.progress = progress;
             }
@@ -180,23 +189,23 @@ const resolvers = {
             throw new Error(`Failed to update the subGoal: ${error.message}`);
           }
       },
-      async createActivity(
+      async createTask(
         root,
         { subGoalId, title, description, timeSpent },
         { models }
       ) {
-        return models.Activity.create({ subGoalId, title, description, timeSpent });
+        return models.Task.create({ subGoalId, title, description, timeSpent, status });
       },
-      async updateActivity(
+      async updateTask(
         root,
-        { activityId, title, description, timeSpent },
+        { taskId, title, description, timeSpent, task },
         { models }
       ) {
         try {
-          const activity = models.Activity.findByPk(activityId);
+          const task = models.Task.findByPk(taskId);
 
-          if (!activity) {
-            throw new Error('subGoal not found');
+          if (!task) {
+            throw new Error('task not found');
           }
           const updatedFields = {};
 
@@ -209,11 +218,11 @@ const resolvers = {
           if (timeSpent) {
             updatedFields.title = timeSpent;
           }
-          await models.Activity.update(updatedFields, { where: { activityId } });
-          return models.Activity.findByPk(activityId);
+          await models.Task.update(updatedFields, { where: { taskId } });
+          return models.Task.findByPk(taskId);
         }
         catch(error) {
-          throw new Error(`Failed to update the Activity: ${error.message}`);
+          throw new Error(`Failed to update the Task: ${error.message}`);
         }
       }
     },
@@ -234,11 +243,11 @@ const resolvers = {
       async goal(subGoal) {
           return subGoal.getGoal();
       },
-      async activities(subGoal) {
-        return subGoal.getActivities();
+      async tasks(subGoal) {
+        return subGoal.getTasks();
       },
     },
-    Activity: {
+    Task: {
       async subGoal(subGoal) {
         return subGoal.getSubGoal();
       },

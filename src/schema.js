@@ -43,6 +43,7 @@ const typeDefs = gql`
     description: String!
     category: String!
     startDate: Date!
+    endDate: Date!
     priority: Int!
     progress: Float!
     status: String!
@@ -57,16 +58,18 @@ const typeDefs = gql`
     description: String!
     category: String!
     startDate: Date!
+    endDate: Date!
     progress: Float!
     status: String!
-    activities: [Activity!]!
+    tasks: [Task!]!
   }
 
-  type Activity {
-    activityId: Int!
+  type Task {
+    taskId: Int!
     subGoal: subGoal!
     title: String!
     timeSpent: Float!
+    status: String!
   }
 
   type Query {
@@ -75,8 +78,8 @@ const typeDefs = gql`
     getGoal(goalId: Int!): Goal
     allSubGoals(goalId: Int!): [subGoal!]!
     getSubGoal(subGoalId: Int!): subGoal
-    allActivities(subGoalId: Int!): [Activity!]!
-    getActivity(activityId: Int!): Activity
+    allTasks(subGoalId: Int!): [Task!]!
+    getTask(taskId: Int!): Task!
     login(usernameOrEmail: String!, password: String!): User
   }
 
@@ -90,6 +93,7 @@ const typeDefs = gql`
       category: String!
       priority: Int!
       startDate: Date!
+      endDate: Date!
       progress: Float!
       status: String!
     ): Goal!
@@ -101,15 +105,17 @@ const typeDefs = gql`
       category: String!
       priority: Int!
       startDate: Date!
+      endDate: Date
       progress: Float!
       status: String!
     ): subGoal!
 
-    createActivity(
+    createTask(
       subGoalId: Int!
       title: String!
       timeSpent: Float!
-    ): Activity!
+      status: String!
+    ): Task!
 
     updateUser(userId: Int!, name: String, password: String): User!
 
@@ -120,6 +126,7 @@ const typeDefs = gql`
       category: String
       priority: Int
       startDate: Date
+      endDate: Date
       progress: Float
       status: String
     ): Goal!
@@ -131,15 +138,17 @@ const typeDefs = gql`
       category: String
       priority: Int
       startDate: Date
+      endDate: Date
       progress: Float
       status: String
     ): subGoal!
 
-    updateActivity(
-      activityId: Int!
+    updateTask(
+      taskId: Int!
       title: String
       timeSpent: Float
-    ): Activity! 
+      status: String
+    ): Task! 
   }
 `;
 

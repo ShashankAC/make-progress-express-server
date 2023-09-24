@@ -3,7 +3,11 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('subGoals', {
-      id: {
+      goalId: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      subGoalId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -25,6 +29,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
+      endDate: {
+        allowNull: true,
+        type: Sequelize.DATE
+      },
       progress: {
         allowNull: false,
         type: Sequelize.DOUBLE
@@ -42,6 +50,10 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+    // await queryInterface.addColumn('subGoals', 'endDate', {
+    //   type: Sequelize.DATE,
+    //   allowNull: true,
+    // });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('subGoals');

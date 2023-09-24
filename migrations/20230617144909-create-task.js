@@ -1,9 +1,16 @@
 'use strict';
+
+const { INTEGER } = require('sequelize');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Activities', {
-      id: {
+    await queryInterface.createTable('Tasks', {
+      subGoalId: {
+        allowNull: false,
+        type: INTEGER
+      },
+      taskId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -17,6 +24,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DOUBLE
       },
+      status: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -28,6 +39,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Activities');
+    await queryInterface.dropTable('Tasks');
   }
 };
